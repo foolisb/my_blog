@@ -1,0 +1,240 @@
+<!-- extends表明此页面继承自base.html文件 -->
+{% extends "base.html" %}
+{% load pagetag %}
+{% load timefilter %}
+{% load static %}
+<!-- 写入base.html文件中定义的content -->
+{% block content %}
+<!-- 定义放置文章标题的div容器 -->
+<style>
+div.column:hover {
+    background-color: rgb(228, 228, 228);
+    border-left: 2px solid rgb(30, 177, 17)!important;
+    transition: 0.1s;
+}
+
+div.tag a {
+    color: gray;
+}
+
+div.tag a:hover {
+    color: orange;
+}
+</style>
+<div class="container">
+    <div class="row justify-content-between">
+        <!-- 轮播图 -->
+        <div id="carouselExampleInterval" class="carousel slide col-12 col-md-8" data-bs-ride="carousel">
+            <div class="carousel-inner shadow-sm p-2 ms-3 bg-body">
+              <div class="carousel-item active" data-bs-interval="10000">
+                <img src="{% static 'image/picture1.jpg' %}" class="slide" alt="...">
+                <div style="position: absolute;top: 30%;left: 20%;font-size: 2rem;color: white;">添加文字...添加文字...添加文字...</div>
+              </div>
+              <div class="carousel-item" data-bs-interval="2000">
+                <img src="{% static 'image/picture2.jpg' %}" class="slide" alt="...">
+              </div>
+              <div class="carousel-item">
+                <img src="{% static 'image/picture3.jpg' %}" class="slide" alt="...">
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+        <!-- information -->
+        <div class="div col-4 d-none d-md-block">
+            <div class="card shadow-sm col-12 col-lg-10 col-xl-8" style="height: 21rem;">
+                <div class="mt-2" style="display: flex;justify-content: center;align-items: center;">
+                <img src="{% static 'image/avatar.png' %}"
+                     style="border-radius: 50%;height: 6rem;width: 6rem;" class="card-img-top" alt="...">
+                </div>
+                <div class="card-body">
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <div class="box">
+                            <div class="img">
+                                <img src="{% static 'image/微信.png' %}">
+                            </div>
+                        </div>
+                        <div class="box">
+                            <div class="img">
+                                <img src="{% static 'image/QQ.png' %}">
+                            </div>
+                        </div>
+                        <div class="box">
+                            <div class="img">
+                                <img src="{% static 'image/GitHub-Mark-64px.png' %}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>        
+        </div>
+    </div>
+</div>       
+<div class="container">
+    <div class="row mt-2 ps-3 mb-0">
+        <nav aria-label="breadcrumb" style="height: 30px;">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a style="text-decoration: none;color: black;" href="{% url 'articles:articles_list' %}?page={{ articles.number }}&order=normal&search={{ search }}">
+                        <i class="fas fa-angle-double-down"></i>&nbsp;&nbsp;最新
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a style="text-decoration: none;color: black;" href="{% url 'articles:articles_list' %}?page={{ articles.number }}&order=total_views&search={{ search }}">
+                        最热
+                    </a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="mt-2 col-md-8 col-12">
+                {% for article in articles %}
+                <!-- 文章内容 -->
+                <div class="content-card p-3 mb-3 bg-body rounded">
+                    <div class="row">
+                        <!-- 标题图 -->
+                        {% if article.avatar %}
+                        <div class="col-3" style="height: 100px;width: 20%">
+                            <img src="{{ article.avatar.url }}" 
+                                alt="avatar" 
+                                style="height: 100%;width: 100%;object-fit: fill;border-radius: 0.5rem;"       
+                            >
+                        </div>
+                        {% endif %}
+
+                        {% if article.avatar %}
+                        <div class="col-9">
+                        {% else %}
+                        <div class="col-12">
+                        {% endif %}  
+                            <!-- 标题 -->
+                            <h4 style="display: inline;">
+                                <a href="{% url 'articles:article_detail' article.id %}"
+                                style="color: rgb(20, 19, 19);text-decoration: none;" 
+                                >
+                                    {{ article.title }}
+                                </a>  
+                            </h4>
+                            <!-- 栏目 -->
+                            {% if article.column %}
+                            <span class="ps-2 h5" style="border-left:solid 2px rgb(82, 77, 77);">
+                                {{ article.column }}
+                            </span>
+                            {% endif %}
+                            <!-- 标签 -->
+                            &nbsp;&nbsp;
+                            {% for tag in article.tags.all %}
+                            <span class="text-dark">
+                                <a href="{% url 'articles:article_archives' %}?tag={{ tag }}" style="text-decoration: none;color: gray;" >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tags" viewBox="0 0 16 16">
+                                    <path d="M3 2v4.586l7 7L14.586 9l-7-7H3zM2 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 2 6.586V2z"/>
+                                    <path d="M5.5 5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm0 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM1 7.086a1 1 0 0 0 .293.707L8.75 15.25l-.043.043a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 0 7.586V3a1 1 0 0 1 1-1v5.086z"/>
+                                </svg>
+                               {{ tag }}</a>
+                            </span>
+                            {% endfor %}
+                            <!-- 摘要 -->
+                            <div>
+                                <p style="color: gray;">
+                                    {{ article.text|slice:'60' }}...
+                                </p>
+                            </div>
+                            <br>
+                            <!-- 注脚 -->
+                            <p class="post-info fs-7" style="position: absolute;">
+                                <!-- 附加信息 -->
+                                <span>
+                                    <i class="bi bi-person-fill" style="font-size: 1rem;color: rgb(197, 213, 219);"></i>
+                                    {{ article.author.username }}&nbsp;&nbsp;&nbsp;
+                                </span>
+                                <span>
+                                    <i class="bi bi-eye-fill" style="font-size: 1rem;color: rgb(69, 174, 216);"></i>
+                                    {{ article.total_views }}&nbsp;&nbsp;&nbsp;
+                                </span>
+                                <span>
+                                    <i class="bi bi-chat-square-text-fill" style="font-size: 1rem;color: rgb(69, 216, 135);"></i>
+                                    {{ article.comments.count }}&nbsp;&nbsp;&nbsp;
+                                </span>
+                                <span>
+                                    <i class="bi bi-calendar-week" style="font-size: 1rem;color: rgb(216, 111, 69);"></i>
+                                    {{ article.updated|timesince_zh }}
+                                </span>
+                            </p>
+                            <br>
+                        </div> 
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <!-- 侧边栏 -->
+            <div class="col-4 d-none d-md-block">
+                <div class="row">
+                    <div class="me-0 pe-0 col-12 col-lg-10 col-xl-8">
+                        <div class="shadow-sm p-3 mt-2 bg-body rounded">
+                            <i class="fas fa-list" style="color: gray;font-size: 0.9rem;">&nbsp;&nbsp;&nbsp;文章分类</i>
+                            {% for column in columns %}
+                            <div class="column row mt-2 justify-content-between" style="color: gray">
+                                <div class="col-7"><a href="{% url 'articles:article_archives' %}?column={{ column.id }}" style="text-decoration: none;color: gray;">{{ column.title }}</a></div>
+                                <div class="col-2">[{{ column.article.count }}]</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="shadow-sm p-3 mt-2 bg-body rounded">
+                            <i class="fas fa-tags" style="color: gray;font-size: 0.9rem;">&nbsp;&nbsp;&nbsp;标签云</i>
+                            <div class="mt-2 tag">
+                                {% for tag in tags %}
+                                    <a href="{% url 'articles:article_archives' %}?tag={{ tag }}" style="text-decoration: none;" >
+                                        <small><i class="fas fa-hashtag"></i><span> {{ tag }} </span></small>&nbsp;
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="shadow-sm p-3 mt-2 bg-body rounded">
+                            <i class="fas fa-link" style="color: gray;font-size: 0.9rem;">&nbsp;&nbsp;&nbsp;常用链接</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 导航页码 -->
+<div class="container mt-4">
+    <div class="page">
+        <nav aria-label="Page navigation exampl">
+            <ul class="pagination justify-content-center">
+            <!-- 如果不是第一页，显示上翻按钮 -->
+            {% if articles.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ articles.previous_page_number }}&order={{ order }}&search={{ search }}">Previous</a></li>
+            {% else %}
+                <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+            {% endif %}
+            <!-- 当前页面 -->
+            {% for loop_num in articles.paginator.page_range %}
+                {% circle_page articles.number order loop_num search%}
+            {% endfor %}    
+            <!-- 如果不是末页，则显示下翻按钮 -->
+            {% if articles.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ articles.next_page_number }}&order={{ order }}&search={{ search }}">Next</a></li>
+            {% else %}
+                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+
+{% endblock content %}
+

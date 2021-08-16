@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+{% load static %}
+<!-- 获取第三方用户信息 -->
+{% load account socialaccount %}
+<!-- 写入 base.html 中定义的 content -->
+{% block content %}
+<!-- 富文本css -->
+<link rel="stylesheet" href="{% static 'prism/prism.css' %}">
+<!-- toc样式 -->
+<link type="text/css" rel="stylesheet" href="{% static 'general_css/jquery.tocify.css' %}">
+<!-- <link type="text/css" rel="stylesheet" href="{% static 'general_css/jquery.ui.all.css' %}" > -->
+<!-- 文章详情 -->
+<div class="container">
+    <div class="row justify-content-between">
+        <div class="col-md-12 col-lg-9">
+            <div class="mt-4 shadow-sm p-5 pt-3 pb-3 mb-3 bg-body rounded">
+                <!-- 标题及作者 -->
+                <p class="col-auto mt-4 mb-4 fs-2 fw-bolder title">{{ article.title }}</p>
+                <div class="pt-1 pb-1">
+                    <span>
+                        <img src="{{ article.author.profile.avatar.url }}" alt="#" style="border-radius: 50%;height: 1.6rem;width: 1.6rem;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </span>
+                    <span>
+                        <i class="fas fa-eye"></i>
+                        {{ article.total_views }}&nbsp;&nbsp;&nbsp;
+                    </span>
+                    <span>
+                        <i class="fas fa-comments"></i>
+                        {{ article.comments.count }}&nbsp;&nbsp;&nbsp;
+                    </span>
+                    <span>
+                        <i class="fas fa-calendar-alt"></i>
+                        publish:{{ article.created|date:'Y-m-d' }}&nbsp;&nbsp;&nbsp;
+                    </span>
+                    <span>
+                        <i class="far fa-calendar-alt"></i>
+                        update:{{ article.updated|date:'Y-m-d' }}&nbsp;&nbsp;&nbsp;
+                    </span>
+                    {% if user == article.author %}
+                    <span>
+                        <a href="{% url 'articles:article_update' article.id %}" style="text-decoration: none;">
+                            <i class="fas fa-edit"></i>
+                        </a>&nbsp;&nbsp;&nbsp;
+                    </span>
+                    {% endif %}
+                    {% if user == article.author %}
+                    <span>
+                        <a href="#" onclick="confirm_safe_delete()" style="text-decoration: none;">
+                            <i class="fas fa-trash-alt"></i>
+                        </a> 
+                    </span>
+                    {% endif %}
+                    <!-- 删除用表单来比较安全防止被get方法删除 -->
+                    <form 
+                        style="display:none;" 
+                        id="safe_delete"
+                        action="{% url 'articles:article_safe_delete' article.id %}" 
+                        method="POST"
+                        >
+                        {% csrf_token %}
+                        <button type="submit">发送</button>
+                    </form>
+                </div>
+                <hr>
+                <!-- 文章正文 -->
+                <div id="MainText">
+                    <!-- Django出于安全的考虑，会将输出的HTML代码进行转义，这使得article.body中渲染的HTML文本无法正常显示 -->
+                    {{ article.text|safe }}
+                </div>
+                <!-- 点赞按钮 -->
+                <div style="text-align:center;" class="mt-4">
+                    <button class="btn btn-outline-danger"
+                            type="button"
+                            onclick="validate_is_like(
+                                     '{% url 'articles:increase_likes' article.id %}',
+                                     {{ article.id }},
+                                     {{ article.likes }}
+                                     )"
+                            >
+                        <span>点赞</span>
+                        <span>
+                            <i id="heart" class="fas fa-heart" style="color: gray;"></i>
+                        </span>
+                        <span id="likes_number">
+                            {{ article.likes }}
+                        </span>
+                    </button>
+                </div>
+                <div class="alert bg-light text-muted mt-4 mb-4 font-body">
+                    <div>
+                        <span>本文标题：{{ article.title }}</span>
+                    </div>
+                    <div>
+                        <span>本文作者：{{ article.author }}</span>
+                    </div>
+                    <div>
+                        <span>发布时间：{{ article.created }}</span>
+                    </div>
+                    <div>
+                        <span>最后更新：{{ article.updated }}</span>
+                    </div>
+                    <div>
+                        <span>
+                            原始链接：
+                            <a href="{{ request.build_absolute_uri }}"
+                               style="text-decoration: none;color: gray;"
+                            >
+                              {{ request.build_absolute_uri }}
+                            </a>
+                        </span>
+                    </div>
+                    <div>
+                        <span>
+                            许可协议：
+                            <a rel="license"
+                               href="https://creativecommons.org/licenses/by-nc/4.0/"
+                               target="_blank"
+                               style="color: gray;"
+                            >
+                                署名-非商业性使用 4.0 国际许可协议
+                            </a>
+                        </span>
+                    </div>
+                    <div style="margin-top: 6px">
+                        <span>
+                            <u>转载请保留原文链接及作者</u>
+                        </span>
+                    </div>
+                </div>
+                <!-- 相邻文章导航 -->
+                <div class="row justify-content-end justify-content-between mt-4">
+                    {% if next_article %}
+                    <div class="col-auto">
+                        <a  href="{{ pre_article.get_absolute_url }}" 
+                        class="btn btn-secondary" 
+                        >
+                        <i class="fas fa-angle-double-left"></i>&nbsp;{{ pre_article.title }}
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% if pre_article %}
+                    <div class="col-auto">
+                        <a  href="{{ next_article.get_absolute_url }}" 
+                            class="btn btn-secondary"
+                            >
+                            {{ next_article.title }}&nbsp;<i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- 发表评论 -->
+            <div class="mt-4 shadow-sm p-3 mb-5 bg-body rounded">
+                {% if user.is_authenticated %}
+                <div>
+                    <form action="{% url 'comment:post_comment' article.id %}"
+                        method="POST"    
+                    >
+                    {% csrf_token %}
+                        <div class="form-group">
+                            <label class="mb-4" for="body">
+                                <strong>
+                                    留言评论：
+                                </strong>
+                            </label>
+                            <!-- <textarea 
+                                type="text" 
+                                class="form-control" 
+                                id="body" 
+                                name="body" 
+                                rows="3"></textarea> -->
+                            <div>
+                                {{ comment_form.media }}
+                                {{ comment_form.body }}
+                            </div>
+                        </div>
+                        <!-- 提交按钮 -->
+                        <div class="d-grid gap-2 justify-content-end">
+                            <button type="submit" class="btn btn-outline-secondary mt-4" data-bs-toggle="tooltip" data-bs-placement="right" title="Tooltip on right">发送</button>
+                        </div>      
+                    </form>
+                </div>
+                {% else %}
+                <br>
+                <div class="row">
+                    <div>
+                        {{ comment_form.media }}
+                        {{ comment_form.body }}
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="button" class="btn btn-secondary mt-4" data-bs-toggle="tooltip" data-bs-placement="right" title="登陆后发言">发送</button>
+                    </div>
+                </div>
+                <br>
+                {% endif %}
+                
+                <!-- 显示评论 -->
+                {% load mptt_tags %}
+                <div class="container p-0">
+                    <p>共有{{ comments.count }}条评论</p>
+                    <div class="row">
+                    <!-- 遍历树形结构 -->
+                    {% recursetree comments %}
+                    <!-- 给节点取名comment -->
+                        {% with comment=node %}
+                        <div class="{% if comment.reply_to %}
+                                    offset-1 col-11
+                                    {% else %}
+                                    col-12
+                                    {% endif %}"
+                             id="comment_elem_{{ comment.id }}"
+                        >
+                        <div class="card">
+                            <div class="card-header">
+                                <small style="color: rgb(29, 30, 31)">
+                                    {% if comment.user.socialaccount_set.all %}
+                                        {{ comment.user.socialaccount_set.all.0.extra_data.login }}
+                                    {% else %}
+                                        {{ comment.user }}
+                                    {% endif %}
+                                </small>
+                                {% if comment.reply_to %}
+                                    <small style="color: rgb(102, 97, 98);">
+                                        reply to <em>{{ comment.reply_to }}</em>
+                                    </small>
+                                {% endif %} 
+                                <small style="color: rgb(51, 53, 51)">
+                                    comment on {{ comment.created|date:"Y-m-d H:i:s" }}
+                                </small>            
+                            </div>
+                            <div class="card-body">
+                                {{ comment.body|safe }}
+                            </div>
+                        </div>
+                            <div class="mt-1 mb-1" style="text-align: right;">                     
+                                <!-- 加载model的链接 -->
+                                {% if user.is_authenticated %}
+                                    <a  class="btn btn btn-light btn-sm text-muted" data-bs-toggle="collapse" 
+                                        data-bs-target="#collapseExample_{{ comment.id }}">
+                                        回复
+                                    </a>
+                                {% else %}
+                                    <a class="btn btn-light btn-sm text-muted" 
+                                       href="#" data-bs-toggle="tooltip" title="请先登陆" 
+                                    >
+                                        回复
+                                    </a>
+                                {% endif %}
+                            </div>
+                            <div class="collapse" id="collapseExample_{{ comment.id }}">
+                                <iframe src="{% url 'comment:comment_reply' article.id comment.id %}"
+                                    frameborder="0" style="width: 100%;height: 300px;"></iframe>
+                            </div>
+                            {% if not comment.is_leaf_node %}
+                                <div class="children">
+                                    {{ children }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% endwith %}
+                    {% endrecursetree %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 新增的目录 -->
+        <div class="col-lg-3 mt-4 d-none d-lg-block">
+            <div id="toc" style="z-index: 999;"> 
+                <p class="fs-4 mt-2 ps-2"><strong>目录</strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block script %}
+<!-- 点赞功能 -->
+<script src="{% static 'js/csrf.js' %}"></script>
+<script>
+    window.onload = function myfunction() {
+        //取出LocalStorage中的数
+        var id = '{{ article.id }}';
+        let storage = window.localStorage;
+        const storage_str_data = storage.getItem("my_blog_data");
+        let storage_json_data = JSON.parse(storage_str_data);
+        
+        //检查当前文章是否已经点赞。是则status = true
+        const status = check_status(storage_json_data, id);
+        if (status) {
+            $('i#heart').css('color', '#dc3545');
+        }
+    }
+</script>
+<script>
+    function validate_is_like(url, id, likes) {
+        //取出LocalStorage中的数
+        let storage = window.localStorage;
+        const storage_str_data = storage.getItem("my_blog_data");
+        let storage_json_data = JSON.parse(storage_str_data);
+        
+        //检查当前文章是否已经点赞。是则status = true
+        const status = check_status(storage_json_data, id);
+        if (status) {
+            layer.msg('已经点过赞了');
+            return;
+        } else {
+            //用 Jquery 找到点赞数量，并+1
+            $('i#heart').css('color', '#dc3545');
+            $('span#likes_number').text(likes+1).css('color', '#dc3545');
+        }
+        //用ajax向后端发送post请求
+        $.post(
+            url,
+            //post只为了crsf校验
+            {},
+            function(result) {
+                if (result === 'success') {
+                    //修改点赞数据
+                    try {
+                        storage_json_data[id] = true;
+                    } catch (e) {
+                        window.localStorage.clear();
+                    };
+                    //将字典装换为字符串，以便存储到LocalStorage
+                    const d = JSON.stringify(storage_json_data);
+                    //尝试将存储点赞数据到LocalStorage
+                    try {
+                        storage.setItem("my_blog_data", d);
+                    } catch (e) {
+                        //code 22 错误表示LocalStorage空间满了
+                        if (e.code === 22) {
+                            window.localStorage.clear();
+                            storage.setItem("my_blog_data", d);
+                        }
+                    };
+                } else {
+                    layer.msg("与服务器通信失败..过一会儿再试试");
+                }
+            }
+        );
+    };
+    // 辅助点赞主函数，验证点赞状态
+    function check_status(data, id) {
+        // 尝试查询点赞状态
+        try {
+            if (id in data && data[id]) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (e) {
+            window.localStorage.clear();
+            return false;
+        };
+    };
+</script>
+
+<script>
+
+$(".django-ckeditor-widget").removeAttr('style');
+
+</script>
+
+<script>
+
+function confirm_safe_delete() {
+    layer.open({
+        skin: 'layui-layer-lan',
+        title: "确认删除",
+        content: "确认删除这篇文章吗？",
+        yes: function(index, layero) {
+            $('form#safe_delete button').click();
+            layer.close(index);
+        }
+    })
+}
+
+</script>
+
+<script>
+
+//tocify设置
+$(function() {
+    
+    var toc = $("#toc").tocify({
+    context: "#MainText",//起作用位置在文章内容处
+    selectors: "h3,h4,h5",
+    showEffect: "show",
+    extendPage: false
+    }).data("toc-tocify");
+
+    // Writes all of the current plugin options to the console
+    console.log(toc.options);
+
+});
+
+</script>
+
+<!-- 富文本插件 -->
+<script src="{% static 'ckeditor/ckeditor/plugins/prism/lib/prism/prism_patched.min.js' %}"></script>
+<!-- tocify目录 -->
+<script src="{% static 'js/jquery-ui-1.9.1.custom.min.js' %}"></script>
+<script src="{% static 'js/jquery.tocify.min.js' %}"></script>
+
+{% endblock script %}

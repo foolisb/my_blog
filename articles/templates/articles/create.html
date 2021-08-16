@@ -1,0 +1,67 @@
+<!-- extends表明此页面继承自 base.html 文件 -->
+{% extends "base.html" %} 
+{% load static %}
+<!-- 写入 base.html 中定义的 content -->
+{% block content %}
+<!-- 写文章表单 -->
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <br>
+            <!-- 提交文章的表单 -->
+            <form method="post" action="." enctype="multipart/form-data">
+                <!-- Django中需要POST数据的地方都必须有csrf_token -->
+                {% csrf_token %}
+                <!-- 文章标题图 -->
+                <div class="form-group">
+                    <label for="avatar">标题图</label>
+                    <input type="file" class="form-control-file" name="avatar" id="avatar">
+                </div>
+                <!-- 文章标题 -->
+                <div class="form-group">
+                    <!-- 标签 -->
+                    <label for="title">文章标题</label>
+                    <!-- 文本框 -->
+                    <input type="text" class="form-control" id="title" name="title">
+                </div>
+                <br>
+                <!-- 文章栏目 -->
+                <div class="form-group">
+                    <label for="column">栏目</label>
+                    <select class="form-select"
+                            name="column" 
+                            aria-label="Default select example">
+                        <option selected value="none">选择栏目...</option>
+                        {% for column in columns %}
+                        <!-- 复选框提交的是value的内容 -->
+                        <option value="{{ column.id }}">
+                            {{ column.title }}
+                        </option>
+                        {% endfor %}
+                      </select>
+                </div>
+                <!-- 文章标签 -->
+                <div class="form-group">
+                    <label for="tags">标签</label>
+                    <input type="text" class="form-control" id="tags" name="tags">
+                </div>
+                <br>
+                <!-- 文章正文 -->
+                <div class="form-group">
+                    <!-- <label for="text">文章正文</label> -->
+                    <!-- 文本区域，name属性值一定要与模型的文本字段名相对应不然数据不符合模型要求会一直无效 -->
+                    <!-- <textarea type="text" class="form-control" id="editor1" name="text" rows="12"></textarea> -->
+                <!-- 提交按钮 -->
+                <!-- <button type="submit" class="btn btn-primary">完成</button> -->
+                    <!-- <script> -->
+                        <!-- CKEDITOR.replace( 'editor1');  -->
+                    <!-- </script> -->
+                    {{ article_post_form.media }}
+                    {{ article_post_form.text }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

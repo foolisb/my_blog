@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content%}
+
+<div class="container">
+    <div class="mt-4 ml-4 col-lg-2 col-3">
+        <a href="{% url 'notice:update' %}" class="btn btn-warning" role="button">清空所有通知</a>
+    </div>
+    <!-- 未读通知列表 -->
+    {% for notice in notices %}
+        <div class="card col-lg-6 col-8 mt-3">
+            <div class="card-header">
+            <i class="far fa-envelope"></i>
+            <span class="float-end">{{ notice.timestamp|date:"Y/m/d H:i" }}</span>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'notice:update' %}?article_id={{ notice.target.id }}&notice_id={{ notice.id }}#comment_elem_{{ notice.action_object.id }}"
+                target="_blank" style="text-decoration: none;"
+                >
+                <span style="color: #5897fb;">
+                    {{ notice.actor }}
+                </span>
+                    在 <span style="color: #01a252;">{{ notice.target }}</span> {{ notice.verb }}。
+                </a>
+            </div>
+        </div>               
+    {% endfor %}     
+
+    <!-- 已读读通知列表 -->
+    {% for readnotice in readnotices %}
+        <div class="card col-lg-6 col-8 mt-3">
+            <div class="card-header">
+            <i class="far fa-envelope-open"></i>
+            <span class="float-end">{{ readnotice.timestamp|date:"Y/m/d H:i" }}</span>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'notice:update' %}?article_id={{ readnotice.target.id }}&notice_id={{ readnotice.id }}#comment_elem_{{ readnotice.action_object.id }}""
+                target="_blank" style="text-decoration: none;"
+                >
+                <span style="color: #5897fb;">
+                    {{ readnotice.actor }}
+                </span>
+                    在 <span style="color: #01a252;">{{ readnotice.target }}</span> {{ readnotice.verb }}。
+                </a>
+            </div>
+        </div>               
+    {% endfor %}     
+</div>
+
+{% endblock content %}

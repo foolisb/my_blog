@@ -1,0 +1,32 @@
+<!-- extends表明此页面继承自 base.html 文件 -->
+{% extends "base.html" %} 
+{% load static %}
+<!-- 写入 base.html 中定义的 content -->
+{% block content %}
+
+<div class="container">
+    <div class="row col-8">
+        <div class="mt-4 shadow-sm p-5 pt-3 pb-3 mb-3 bg-body rounded">
+            {% if 'column' in request.build_absolute_uri %}
+                <h3 class="mt-4 mb-3" style="text-align: center;"><i class="fas fa-bars"></i> {{ articles.first.column }}</h3>
+            {% elif 'tag' in request.build_absolute_uri %}
+                <h3 class="mt-4 mb-3" style="text-align: center;"><i class="fas fa-hashtag"></i> {{ tag }}</h3>
+            {% else%}
+                <h3 class="mt-4 mb-3" style="text-align: center;"><i class="fas fa-archive"></i> Time Line</h3>
+            {% endif %}
+            <ul class=" time-axis">
+                {% for article in articles %}
+                    <li class="time-axis-item">
+                        <div class="time-axis-date">{{ article.created|date:'Y-m-d'}}
+                            <span></span>
+                        </div>
+                        <div class="time-axis-title shadow-none mt-1 ps-2 bg-light rounded"><a href="{% url 'articles:article_detail' article.id %}" style="text-decoration: none;">{{ article.title }}</a></div>
+                        <p class="time-axis-achievement"></p>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div> 
+    </div>
+</div>
+
+{% endblock content %}

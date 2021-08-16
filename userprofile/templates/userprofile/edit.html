@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+{% load account socialaccount %}
+{% block content %}
+<!-- 用户信息注册 -->
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <br>
+      <div class="mb-3">Username: {% if user.socialaccount_set.all %}
+                                    {{ user.socialaccount_set.all.0.extra_data.login }}
+                                  {% else %}
+                                    {{ user.username }}
+                                  {% endif %}</div>
+        {% if profile.avatar %}
+          <img src="{{ profile.avatar.url }}" style="border-radius: 50%;height: 100px;width: 100px;">
+        {% else %}
+          <h5>暂无头像</h5>
+        {% endif %}
+        <br>
+        <!-- 表单必须设置enctype="multipart/form-data"属性，才能够正确上传图片等文件 -->
+        <form method="post" action="." enctype="multipart/form-data">
+          {% csrf_token %}
+          <!-- username -->
+          <div class="form-group col-md-3">
+            <label for="exampleFormControlInput1" class="form-label">User name</label>
+            <input type="name" class="form-control" id="exampleFormControlInput1" name="username" value="{{ user.username }}">
+          </div>
+          <br>
+          <!-- avatar -->
+          <div class="form-group">
+            <label for="avatar">上传头像</label>
+            <input type="file" class="form-control-file" id="avatar" name="avatar">
+          </div>
+          <br>
+          <!-- phone -->
+          <div class="form-group col-md-5">
+           <label for="exampleFormControlInput1" class="form-label">Phone number</label>
+           <input type="phone" class="form-control" id="exampleFormControlInput1" name="phone">
+          </div>
+           <!-- bio -->
+          <div class="form-group col-md-5">
+            <label for="exampleFormControlTextarea1" class="form-label">Biography</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" name="bio" rows="3"></textarea>
+          </div>
+          <br>
+          <!-- 提交按钮 -->
+          <button type="submit" class="btn btn-primary">commit</button>
+        </form>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

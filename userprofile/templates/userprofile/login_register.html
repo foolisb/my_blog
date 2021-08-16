@@ -1,0 +1,189 @@
+{% load static %}
+{% load i18n %}
+{% load account socialaccount %}
+{% get_providers as socialaccount_providers %}
+<style>
+.bg-gradient-info {
+    background-image: linear-gradient(310deg,#2152ff,#21d4fd);
+}
+.btn.bg-gradient-info, .btn.bg-gradient-info:hover, .btn.bg-gradient-primary, .btn.bg-gradient-primary:hover {
+    color: #fff;
+}
+.btn:not([class*=btn-outline-]) {
+    border: 0;
+}
+.text-gradient.text-info {
+    background-image: linear-gradient(310deg,#2152ff,#21d4fd);
+}
+.text-gradient {
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    z-index: 1;
+}
+.modal-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    pointer-events: auto;
+    background-color: rgb(241, 234, 234);
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: .75rem;
+    outline: 0;
+}
+.card-footer {
+    padding: 1.5rem;
+    background-color:  rgb(240, 240, 240);
+}
+.card-footer:last-child {
+    border-radius: 0 0 1rem 1rem;
+}
+</style>
+<!-- register -->
+<style>
+.text-gradient.text-primary {
+    background-image: linear-gradient(310deg,#7928ca,#ff0080);
+}
+.bg-gradient-primary {
+    background-image: linear-gradient(310deg,#7928ca,#ff0080);
+}
+</style>
+<!-- Modallogin -->
+<div class="modal fade" id="loginModalForm" tabindex="-1" aria-labelledby="exampleModalForm" aria-hidden="true">
+  <div class="modal-dialog modal-danger modal-dialog-centered " role="document">
+    <div class="modal-content">
+      <div class="card-header text-start pt-3 ps-3">
+        <h3 class="font-weight-bolder text-info text-gradient mb-1">Welcome back</h3>
+        <p class="mb-0">Enter your username and password to sign in</p>
+      </div>
+      <div class="card-body" style="background-color: rgb(240, 240, 240);">
+        <form>
+          <!-- 账号 -->
+          <label>Username</label>
+          <div class="input-group-sm mb-3">
+            <input type="name" class="form-control" name="username" id="username" placeholder="Name" aria-label="Name" aria-describedby="name-addon" >
+          </div>
+          <!-- 密码 -->
+          <label>Password</label>
+          <div class="input-group-sm mb-3">
+            <input type="password" class="form-control" name="password" id="password" placeholder="Password" aria-label="Password" aria-describedby="password-addon" >
+          </div>
+          <p class="mb-4 text-sm mx-auto">
+            Forget password?
+            <a href="{% url 'password_reset_recover' %}" class="text-info text-gradient font-weight-bold">click here</a>
+          </p>
+          {% if socialaccount_providers %}
+            <div class="socialaccount_ballot">
+              <ul class="socialaccount_providers">
+                {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+              </ul>
+            </div>
+            {% include "socialaccount/snippets/login_extra.html" %}
+          {% endif %}
+          <!-- 提交 -->
+          <div class="text-center">
+            <button type="button" class="btn bg-gradient-info mt-4 mb-0" onclick="login()">Sign in</button>
+          </div>
+        </form>
+      </div>
+      <div class="card-footer text-center pt-2 border-0">
+        <p class="mb-4 text-sm mx-auto">
+          Don`t have an account?
+          <a href="#" class="text-info text-gradient font-weight-bold" data-bs-toggle="modal" data-bs-target="#registerModalSignup" data-bs-dismiss="modal">Sign up</a>
+        </p>
+      </div> 
+    </div>
+  </div>
+</div>
+
+<!-- Modalregister -->
+<div class="modal fade" id="registerModalSignup" tabindex="-1" aria-labelledby="exampleModalSignup" aria-hidden="true">
+  <div class="modal-dialog modal-danger modal-dialog-centered modal-" role="document">
+    <div class="modal-content" style="width: 100%;">
+      <div class="card-header pt-3 ps-3 text-start">
+        <h3 class="font-weight-bolder text-primary text-gradient">Join us today</h3>
+        <p class="mb-0">Enter your email and password to register</p>
+      </div>
+      <div class="card-body pb-3" style="background-color: rgb(240, 240, 240);">
+        <form role="form text-start">
+          <label>Name</label>
+          <div class="input-group mb-3">
+            <input type="text" name="username" id="username" class="form-control" placeholder="Name" aria-label="Name" aria-describedby="name-addon" required>
+          </div>
+          <label>Email</label>
+          <div class="input-group mb-3">
+            <input type="email" name="email" id="email" class="form-control" placeholder="Email" aria-label="Email" aria-describedby="email-addon" required>
+          </div>
+          <label>Password</label>
+          <div class="input-group mb-3">
+            <input type="password" name="password" id="password" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="password-addon" required>
+          </div>
+          <label>Password conofirm</label>
+          <div class="input-group mb-3">
+            <input type="password" name="password2" id="password2" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="password-addon" required>
+          </div>
+          <div class="text-center">
+            <button type="button" class="btn bg-gradient-primary btn-lg btn-rounded w-100 mt-4 mb-0" onclick="register()">Sign up</button>
+          </div>
+        </form>
+      </div>
+      <div class="card-footer text-center pt-0 px-sm-4 px-1 border-0">
+        <p class="mb-4 mx-auto">
+          Already have an account?
+          <a href="#" class="text-primary text-gradient font-weight-bold" data-bs-toggle="modal" data-bs-target="#loginModalForm" data-bs-dismiss="modal">Sign in</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>     
+
+<script src="{% static 'js/csrf.js' %}"></script>
+<script>
+  function login(){
+      let username = $("#username").val();
+      let password = $("#password").val();
+      $.ajax({
+            url: '/userprofile/login/',
+            type: 'POST',
+            data: {username: username, password: password},
+            // 成功回调
+            success: function(e){
+                if(e === '200 OK'){
+                  window.location.reload();
+                }
+                else if(e === 'error1'){
+                  alert("账号或密码错误")
+                }   
+                else if(e === 'error2'){  
+                  alert("输入数据不合法")
+                }
+            }
+      })
+  }
+  function register(){
+      let email = $("#email").val();
+      let username = $("#username").val();
+      let password = $("#password").val();
+      let password2 = $("#password2").val();
+      $.ajax({
+            url: '/userprofile/register/',
+            type: 'POST',
+            data: { email: email,
+                    username: username, 
+                    password: password,
+                    password2: password2},
+            // 成功回调
+            success: function(e){
+                if(e === '200 OK'){
+                  window.location.reload();
+                } 
+                else {  
+                  alert("输入数据不合法")
+                }
+            }
+      })
+  }
+</script>      

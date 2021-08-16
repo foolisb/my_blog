@@ -1,0 +1,57 @@
+{% load static %}
+<div class="offcanvas offcanvas-start bg-body" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+    <div class="offcanvas-header">
+      <h4 class="offcanvas-title" id="offcanvasExampleLabel">About</h4>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="time"></div>
+        <div>
+            Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.
+        </div>
+        <div class="circles">
+            <div class="first circle" id="circle">
+                <strong>100%</strong>
+            </div>
+        </div>
+        <div class="mb-4 ms-4 fixed-bottom">
+            <a href="{% if user.is_superuser %}
+                     /control
+                     {% else %}
+                     #
+                     {% endif %}"
+            >
+            <i class="fas fa-cog" style="font-size: 1rem;">后台管理</i></a>
+        </div>
+    </div>
+</div>
+
+
+<script src="{% static 'js/Aui-core-1.42-min.js' %}" language="javascript" type="text/javascript"></script>
+<script src="{% static 'js/time.js' %}" language="javascript" type="text/javascript"></script>
+<script src="{% static 'js/jquery-1.11.0.min.js' %}"></script>
+<script src="{% static 'js/circle-progress.js' %}"></script>
+<script>
+    $('#circle').circleProgress({
+        value: 0.75,
+        size: 80,
+        thickness: 10,
+        lineCap: "round",
+        fill: {
+            gradient: ["red", "orange"]
+        }
+    });
+    
+    $('#circle').click(function(){
+        $('#circle').circleProgress({
+        value: 0.75,
+        size: 80,
+        thickness: 10,
+        lineCap: "round",
+        fill: {
+            gradient: ["red", "orange"]
+        }
+    });
+
+    });
+</script>        

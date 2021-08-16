@@ -1,0 +1,235 @@
+/* header.html */
+nav.navbar {
+    opacity: 0.8;
+}
+
+/* base.html */
+:root {
+    --gridSizeXu:20px; /* 虚线网格大小 */
+    --gridSizeShi:60px; /* 虚线网格大小 */
+    --gridColor:#5f5f5f; /* 线条颜色 */
+}
+
+/* 虚线部分 */
+.grid-xu {
+   overflow: hidden;
+   width: 100%;
+   height: 100%;
+   position: fixed;
+   z-index: -2;
+   transform: scale(1.1);
+}
+
+.grid-xu::before, .grid-xu::after {
+   opacity: .5;
+   content: '';
+   background-repeat: repeat;
+   position: absolute;
+   width: 100%;
+   height: 100%;
+   left: 0;
+   top: 0;
+}
+
+.grid-xu::before {
+   /* 从左往右 */
+   background: linear-gradient(to right,white 1px,transparent 1px),
+   linear-gradient(to bottom,var(--gridColor) .5px,transparent .5px);
+   background-size: 3px var(--gridSizeXu);
+}
+
+.grid-xu::after {
+   /* 从上往下 */
+   background: 
+   linear-gradient(to bottom,white 1px,transparent 1px),
+   linear-gradient(to right,var(--gridColor) .5px,transparent .5px);
+   background-size: var(--gridSizeXu) 3px;
+}
+/* 实线条部分 */
+.grid-shi {
+  overflow: hidden;
+   width: 100%;
+   height: 100%;
+   position: fixed;
+   z-index: -1;
+   transform: scale(1.1);
+   background: linear-gradient(to right,var(--gridColor) .5px,transparent .5px),
+   linear-gradient(to bottom,var(--gridColor) .5px,transparent .5px);
+   background-size: var(--gridSizeShi) var(--gridSizeShi);
+   background-repeat: repeat;
+}
+
+body {
+    margin: 0; 
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 0.975rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: #000000b7;
+    background-color: rgb(244,244,244);
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(247, 245, 245, 0.904);
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+#wrapper {
+    min-height: 100%;
+    margin-bottom: -60px;
+}
+
+#footer,
+#push {
+    height: 4rem;
+    width: 100%;
+    margin: 0;
+}
+
+/* 箭头 */
+/* 按钮边框的大小、位置、样式 */
+.toTop-arrow {
+    width: 3.5rem;
+    height: 3.5rem;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 33%;
+    opacity: 0.7;
+    background: black;
+    cursor: pointer;
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    display: none;
+}
+
+/* 绘制按钮中的向上箭头 */
+.toTop-arrow::before, .toTop-arrow::after {
+    width: 31px;
+    height: 7px;
+    border-radius: 3px;
+    background: orange;
+    position: absolute;
+    content: "";
+}
+
+.toTop-arrow::before {
+    transform: rotate(-45deg) translate(0, -50%);
+    left: 0.4rem;
+}
+
+.toTop-arrow::after {
+    transform: rotate(45deg) translate(0, -50%);
+    right: 0.4rem;
+}
+
+/* 取消点击按钮时的聚焦 */
+.toTop-arrow:focus {
+    outline: none;
+}
+
+/* list.html */
+/* 轮播图 */
+div.carousel-item {
+    height: 20rem;
+    width: 100%;
+}
+
+img.slide {
+    height: 100%;
+    width: 100%;
+    z-index: -10;
+}
+
+.views {
+    margin-right: 10px;
+    color: rgb(252, 236, 236);
+}
+
+.content-card:hover {
+    /* 鼠标选中时候发放大 */
+    /* transform: scale(1.02); */
+    box-shadow: 1px 1px 1px rgb(165, 156, 156);   
+    border-left: 6px solid rgb(218, 117, 2)!important;
+    transition: 0.2s;
+}
+
+/* 新拟态 */
+.box{
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    align-items: center;
+    width: 50px;
+    height: 60px;
+    margin: auto;
+    margin-bottom: 10px;
+}
+
+.box .img{
+    width: 60px;
+    height: 60px;
+    box-shadow: 18px 18px 30px rgba(0,0,0,0.1),
+    -18px -18px 30px rgba(255,255,255,1);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #efeeee;
+    transition: box-shadow .2s ease-out;
+    position: relative;
+}
+
+.box .img img{
+    width: 40px;
+    transition: width .2s ease-out;
+    /*实现效果以及实现方向以及实现时间 ease-out代表过度效果*/
+}
+
+.box .img:hover{
+    box-shadow: 0 0 0 rgba(0,0,0,0.1),
+    0 0 0 rgba(255,255,255,1),
+     inset 18px 18px 30px rgba(0,0,0,0.1),
+     inset -18px -18px 30px rgba(255,255,255,1);
+    /*内嵌投影值*/
+    transition: box-shadow .2s ease-out;
+}
+
+.box .img:hover img{
+    width: 48px;
+    transition: width .2s ease-out;
+}
+
+/* detail */
+.title:hover {
+    transform: translateX(100px);
+    transition: all 1s;
+}
+
+/* about */
+div.fixed-bottom a:visited {
+    color: gray;
+}
+
+div.fixed-bottom a:hover {
+    color: coral;
+}
+
+.circle {
+    width: 100px;
+    margin: 6px 6px 20px;
+    display: inline-block;
+    position: relative;
+    text-align: center;
+    line-height: 1.2;
+}
+
+div.circle strong {
+    position: absolute;
+    top: 30px;
+    display: block;
+    width: 100%;
+}

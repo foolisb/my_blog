@@ -1,0 +1,160 @@
+<!-- 定义导航栏 -->
+<!-- 响应式布局在屏幕小于lg（大屏幕电脑）时垂直堆叠 -->
+<!-- 引入notifications的模板标签 -->
+{% load notifications_tags %}
+{% notifications_unread as unread_count %}
+{% include 'about.html' %}
+{% include 'userprofile/login_register.html' %}
+{% load static %}
+<!-- 获取第三方用户信息 -->
+{% load account socialaccount %}
+<style>
+  @-webkit-keyframes rotation {
+    from {
+          -webkit-transform: rotate(0deg);
+    }
+    to {
+       -webkit-transform: rotate(360deg);
+    }
+  }
+  img.brand {
+            -webkit-transform-: rotate(360deg);
+            animation: rotation 8s linear infinite;
+            -moz-animation: rotation 8s linear infinite;
+            -webkit-animation: rotation 8s linear infinite;
+            -o-animation: rotation 8s linear infinite;
+  }      
+</style>
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top"> 
+  <div class="container">
+    <!-- 导航栏logo -->
+    <a class="navbar-brand mt-2" data-bs-toggle="offcanvas" href="#offcanvasExample">
+      <img class="brand" src="{% static 'image/taiji3.png' %}" alt="#" style="border-radius: 50%;height: 3rem;width: 3rem;">
+    </a>
+    <!-- 小屏幕时折叠按钮 -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <!-- 进入导航 -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent"> 
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <!-- 导航条目 -->
+        <li class="nav-item me-3">
+          <a class="nav-link active" aria-current="page" href="{% url 'articles:articles_list' %}">Home</a>
+        </li>
+        <li class="nav-item dropdown me-3">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Catalog
+          </a>
+          <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDropdown" style="width: 5rem;text-align: center;">
+            {% for column in columns %}
+              <li><a class="dropdown-item" href="{% url 'articles:article_archives' %}?column={{ column.id }}">{{ column }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+        <li class="nav-item dropdown me-3">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Project
+          </a>
+          <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDropdown" style="width: 12rem;">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'articles:article_archives' %}">Archives</a>
+        </li>
+        <!-- 只有超级用户有权限发表文章 -->
+        {% if user.username == 'foolisb' %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'articles:article_create' %}">publish</a>
+        </li>
+        {% endif %}
+      </ul>
+      <!-- 弹性盒子，所有arial-*都是为盲人设置的属性用于屏幕阅读 -->
+      <form class="d-flex" action="{% url 'articles:articles_list' %}">
+        <input class="form-control me-2" name="search" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+      <!-- Django的 if 模板语句 -->
+      {% if user.is_authenticated %}
+      <ul class="navbar-nav ms-4 mb-2 mb-lg-0" style="width: 8rem;">
+        <!-- 如果用户已经登录，则显示用户名下拉框 -->
+          <li class="nav-item dropdown">
+            <a class="nav-link " href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="{% if user.profile.avatar %}
+                          {{ user.profile.avatar.url }}
+                        {% elif user.socialaccount_set %}
+                          {{ user.socialaccount_set.all.0.get_avatar_url }}
+                        {% endif %}" 
+                   alt="#" style="border-radius: 50%;height: 3rem;width: 3rem;">
+              <!-- 小红点 -->
+              {% if unread_count %}
+              <span class="position-absolute translate-middle p-2 mt-2 bg-danger border border-light rounded-circle">
+              </span>
+              {% endif %}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDropdown">
+              <li>
+                <a class="dropdown-item" href="{% url 'notice:list' %}">
+                <i class="fas fa-bell" style="font-size: 1rem;"></i>&nbsp;&nbsp;&nbsp;消息通知
+                {% if unread_count %}
+                  <span class="badge bg-danger">{{ unread_count }}</span>
+                {% endif %}
+                </a>  
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item" href="{% url 'userprofile:logout' %}">
+                <i class="fas fa-sign-out-alt" style="font-size: 1rem;"></i>&nbsp;&nbsp;&nbsp;退出登陆</a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item" href="#" onclick="user_delete()">
+                <i class="fas fa-user-slash" style="font-size: 1rem;"></i>&nbsp;&nbsp;&nbsp;用户注销</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item" href='{% url "userprofile:edit" user.id %}'>
+                <i class="far fa-edit" style="font-size: 1rem;"></i>&nbsp;&nbsp;&nbsp;编辑信息</a></li>
+            </ul>
+          </li>
+      </ul>
+      <!-- 如果用户未登录，则显示 “登录” -->
+      {% else %}
+      <span class="nav-item ps-0">
+        <a class="btn ms-0" data-bs-toggle="modal" data-bs-target="#loginModalForm" href="#">
+        <i class="fas fa-user" style="font-size: 2rem;"></i></a>
+      </span>                    
+      <!-- if 语句在这里结束 -->
+      {% endif %}
+    </div>
+  </div>
+</nav>
+<!-- 新增 -->
+{% if user.is_authenticated %}
+<form 
+    style="display:none;" 
+    id="user_delete"
+    action="{% url 'userprofile:delete' user.id %}" 
+    method="POST"
+>
+{% csrf_token %}
+<button type="submit">发送</button>
+</form>
+<script>
+  function user_delete() {
+    // 调用layer弹窗组件
+    layer.open({
+      skin: 'layui-layer-lan',
+      title: "确认删除",
+      content: "确认删除用户资料吗？",
+      yes: function(index, layero) {
+        $('form#user_delete button').click();
+        layer.close(index);
+      },
+    })
+  }
+</script>
+{% endif %}
