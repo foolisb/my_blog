@@ -133,17 +133,6 @@ html, body {
 
 /* list.html */
 /* 轮播图 */
-div.carousel-item {
-    height: 20rem;
-    width: 100%;
-}
-
-img.slide {
-    height: 100%;
-    width: 100%;
-    z-index: -10;
-}
-
 .views {
     margin-right: 10px;
     color: rgb(252, 236, 236);
@@ -152,7 +141,6 @@ img.slide {
 .content-card:hover {
     /* 鼠标选中时候发放大 */
     /* transform: scale(1.02); */
-    box-shadow: 1px 1px 1px rgb(165, 156, 156);   
     border-left: 6px solid rgb(218, 117, 2)!important;
     transition: 0.2s;
 }
@@ -210,6 +198,10 @@ img.slide {
 }
 
 /* about */
+div.fixed-bottom a:link {
+    color: gray;
+}
+
 div.fixed-bottom a:visited {
     color: gray;
 }
@@ -230,6 +222,13 @@ div.fixed-bottom a:hover {
 div.circle strong {
     position: absolute;
     top: 30px;
+    display: block;
+    width: 100%;
+}
+
+div.circle p {
+    position: absolute;
+    top: 90px;
     display: block;
     width: 100%;
 }

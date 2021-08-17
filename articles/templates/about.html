@@ -6,22 +6,53 @@
     </div>
     <div class="offcanvas-body">
         <div class="time"></div>
-        <div>
-            Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.
+        <div class="mt-5" style="display: flex;justify-content: center;align-items: center;">
+            <img src="{% static 'image/avatar.png' %}"
+                style="border-radius: 50%;height: 6rem;width: 6rem;" class="card-img-top" alt="...">
+        </div>
+        <div class="mt-4 ms-4">
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center border-0">
+                    Name: foolisb                 
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center border-0">
+                    Location: *******                 
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center border-0">
+                    Career: ******                 
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center border-0">
+                    Hobbies: ******                 
+                </li>
+            </ul>
+        </div>
+        <div class="row justify-content-center mt-4 mb-4">
+            <div class="col-4 h3">
+                Skill Bar
+            </div>
         </div>
         <div class="circles">
             <div class="first circle" id="circle">
-                <strong>100%</strong>
+                <strong>60%</strong>
+                <p>Python</p>
+            </div>
+            <div class="second circle" id="circle2">
+                <strong>40%</strong>
+                <p>Django</p>
+            </div>
+            <div class="third circle" id="circle3">
+                <strong>20%</strong>
+                <p>Front-end</p>
             </div>
         </div>
-        <div class="mb-4 ms-4 fixed-bottom">
+        <div class="col-4 mb-4 ms-4 fixed-bottom" style="text-align: center;">
             <a href="{% if user.is_superuser %}
                      /control
                      {% else %}
                      #
                      {% endif %}"
             >
-            <i class="fas fa-cog" style="font-size: 1rem;">后台管理</i></a>
+           <i class="faa-spin fas fa-cog animated faa-slow" style="font-size: 2rem;"></i></a>
         </div>
     </div>
 </div>
@@ -33,7 +64,7 @@
 <script src="{% static 'js/circle-progress.js' %}"></script>
 <script>
     $('#circle').circleProgress({
-        value: 0.75,
+        value: 0.6,
         size: 80,
         thickness: 10,
         lineCap: "round",
@@ -44,14 +75,60 @@
     
     $('#circle').click(function(){
         $('#circle').circleProgress({
-        value: 0.75,
+            value: 0.6,
+            size: 80,
+            thickness: 10,
+            lineCap: "round",
+            fill: {
+                gradient: ["red", "orange"]
+            }
+        });
+
+    });
+
+    $('#circle2').circleProgress({
+        value: 0.4,
         size: 80,
         thickness: 10,
         lineCap: "round",
         fill: {
-            gradient: ["red", "orange"]
+            gradient: ["white", "blue"]
         }
     });
+    
+    $('#circle2').click(function(){
+        $('#circle2').circleProgress({
+            value: 0.4,
+            size: 80,
+            thickness: 10,
+            lineCap: "round",
+            fill: {
+                gradient: ["white", "blue"]
+            }
+        });
+
+    });
+    
+    $('#circle3').circleProgress({
+        value: 0.2,
+        size: 80,
+        thickness: 10,
+        lineCap: "round",
+        fill: {
+            gradient: ["green", "black"]
+        }
+    });
+    
+    $('#circle3').click(function(){
+        $('#circle3').circleProgress({
+            value: 0.2,
+            size: 80,
+            thickness: 10,
+            lineCap: "round",
+            fill: {
+                gradient: ["green", "black"]
+            }
+        });
 
     });
 </script>        

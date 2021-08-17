@@ -24,14 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-(t#_fwyznes!kqgpoh&_2&-+5n1wg*%x(kb*5ubtxpul*ai%9f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# 关闭调试模式
-DEBUG = False
+DEBUG = True
 
-# 允许的服务器
-ALLOWED_HOSTS = ['*']
-
-# 静态文件收集目录
-STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
+ALLOWED_HOSTS = []
 
 AUTHENTICATION_BACKENDS = (
     #Django后台可独立于allauth登陆
@@ -114,11 +109,11 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': '',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+        'NAME': 'blog',
+        'USER': 'root',
+        'PASSWORD': '19941109',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
     }
 }
 
@@ -163,6 +158,10 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+# 媒体文件地址
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
@@ -171,19 +170,65 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #SMTP服务器，改为你的邮箱SMTP
 EMAIL_HOST = 'smtp.qq.com'
 #改为你的邮箱名字
-EMAIL_HOST_USER = ''
+EMAIL_HOST_USER = '1451259501@qq.com'
 #你的邮箱密码qq是授权码
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_PASSWORD = 'hbvqkgbkejrfhbjh'
 #发送邮件的端口，在自己电脑配置端口号25，服务器可能要改
 EMAIL_PORT = 25
 #是否使用TLS
 EMAIL_USE_TLS = True
 #默认的发件人
-DEFAULT_FROM_EMAIL = ''
-
-# 媒体文件地址
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+DEFAULT_FROM_EMAIL = 'FOOLISB的博客<1451259501@qq.com>'
+#日志
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['file', 'mail_admins'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    }
+}
 
 #富文本ckeditor上传内容
 CKEDITOR_UPLOAD_PATH = 'article_upload/'
@@ -253,3 +298,4 @@ CKEDITOR_CONFIGS = {
                                   'emojione']),
     }
 }
+
