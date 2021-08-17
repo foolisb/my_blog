@@ -24,9 +24,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-(t#_fwyznes!kqgpoh&_2&-+5n1wg*%x(kb*5ubtxpul*ai%9f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# 关闭调试模式
+DEBUG = False
 
-ALLOWED_HOSTS = []
+# 允许的服务器
+ALLOWED_HOSTS = ['*']
+
+# 静态文件收集目录
+STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
 
 AUTHENTICATION_BACKENDS = (
     #Django后台可独立于allauth登陆
@@ -109,11 +114,11 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'blog',
-        'USER': 'root',
-        'PASSWORD': '19941109',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -170,15 +175,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #SMTP服务器，改为你的邮箱SMTP
 EMAIL_HOST = 'smtp.qq.com'
 #改为你的邮箱名字
-EMAIL_HOST_USER = '1451259501@qq.com'
+EMAIL_HOST_USER = ''
 #你的邮箱密码qq是授权码
-EMAIL_HOST_PASSWORD = 'hbvqkgbkejrfhbjh'
+EMAIL_HOST_PASSWORD = ''
 #发送邮件的端口，在自己电脑配置端口号25，服务器可能要改
 EMAIL_PORT = 25
 #是否使用TLS
 EMAIL_USE_TLS = True
 #默认的发件人
-DEFAULT_FROM_EMAIL = 'FOOLISB的博客<1451259501@qq.com>'
+DEFAULT_FROM_EMAIL = ''
+
 #日志
 LOGGING = {
     'version': 1,
@@ -298,4 +304,3 @@ CKEDITOR_CONFIGS = {
                                   'emojione']),
     }
 }
-
